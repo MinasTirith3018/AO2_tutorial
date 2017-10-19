@@ -216,9 +216,6 @@ def make_master_dark(table, mbias, sigma=3, iters=5, min_value=0,
     print_info(Nccd=Nccd, min_value=min_value, sigma=sigma, iters=iters)
     mdark = clip_median_combine(dark_orig, sigma=sigma, iters=iters, 
                                 min_value=min_value, axis=-1)
-
-    print('and bias subtraction ...')
-    mdark -= mbias    
     mdark = mdark.astype(dtype)
     
     if output != '':
