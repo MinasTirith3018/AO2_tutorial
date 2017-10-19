@@ -211,9 +211,8 @@ def make_master_dark(table, mbias, sigma=3, iters=5, min_value=0,
                                       dtype=dtype)
 
     for i in range(Nccd):
-        dark_orig[:, :, i] = ( fits.getdata(table[colname_file][i]) 
+        dark_orig[:, :, i] = ( (fits.getdata(table[colname_file][i]) - mbias)
                               / exptimes[i])
-    
     print_info(Nccd=Nccd, min_value=min_value, sigma=sigma, iters=iters)
     mdark = clip_median_combine(dark_orig, sigma=sigma, iters=iters, 
                                 min_value=min_value, axis=-1)
@@ -291,6 +290,15 @@ def response_correct(data, normdata1d, dispaxis=0, output='', threshold=0.,
         The final 2-D response map pixels smaller than this value will be 
         replaced by 1.0.
     
+    Usage
+    -----
+    nsmooth = 7
+    normdata1d = np.sum(mflat[700:900, :] , axis=0)
+    normdata1d = convolve(normdata1d, Box1DKernel(nsmooth), boundary='extend')
+    response = preproc.response_correct(data = mflat.data, 
+                                        normdata1d=normdata1d, 
+                                        dispaxis=1,
+                                        order=10)
     
     '''
     
@@ -335,6 +343,7 @@ def response_correct(data, normdata1d, dispaxis=0, output='', threshold=0.,
     response2d = data/response_map
     
     return response2d
+
 
 def preproc(fnames, mbias, mflat, min_value=0, crrej=False):
     
